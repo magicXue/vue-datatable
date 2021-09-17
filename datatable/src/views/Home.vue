@@ -36,7 +36,7 @@
               <span class="text-h5">{{ formTitle }}</span>
             </v-card-title>
 
-            <v-card-text>
+            <v-card-text v-show="mainData">
               <v-container>
                 <v-row>
                   <v-col
@@ -88,7 +88,62 @@
                 </v-row>
               </v-container>
             </v-card-text>
-
+            <v-card-text v-show="subData">
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.carbohydrates"
+                      label="Carbohydrates"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.protein"
+                      label="Protein"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.fat"
+                      label="Fat (g)"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.calories"
+                      label="Calories (g)"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.sugar"
+                      label="Sugar (g)"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
@@ -121,11 +176,14 @@
         </v-dialog>
       </v-toolbar>
     </template>
+    <template v-slot:item.nutritions="{ item }">
+      <v-btn color="blue darken-1" @click="editItem(item, 'subData')">Edit</v-btn>
+    </template>
     <template v-slot:item.actions="{ item }">
       <v-icon
         small
         class="mr-2"
-        @click="editItem(item)"
+        @click="editItem(item, 'mainData')"
       >
         mdi-pencil
       </v-icon>
@@ -154,6 +212,8 @@ import axios from 'axios'
     data: () => ({
       dialog: false,
       dialogDelete: false,
+      mainData: false,
+      subData: false,
       headers: [
         {
           text: 'Name',
@@ -164,7 +224,7 @@ import axios from 'axios'
         { text: 'Family', value: 'family' },
         { text: 'Order', value: 'order' },
         { text: 'Genus', value: 'genus' },
-        { text: 'Nutritions', value: 'n_actions' },
+        { text: 'Nutritions', value: 'nutritions' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       product: [],
@@ -214,9 +274,16 @@ import axios from 'axios'
             this.product = response.data
           })
       },
-      editItem (item) {
+      editItem (item, type) {
+        console.log('type',type);
+        if(type == 'subData'){
+          this.subData = true;
+          this.editedItem = Object.assign({}, item.nutritions)
+        }else if(type == 'mainData'){
+          this.mainData = true;
+          this.editedItem = Object.assign({}, item)
+        }
         this.editedIndex = this.product.indexOf(item)
-        this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
 
@@ -233,6 +300,8 @@ import axios from 'axios'
 
       close () {
         this.dialog = false
+        this.subData = false;
+        this.mainData = false;
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
