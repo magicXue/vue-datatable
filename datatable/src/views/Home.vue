@@ -35,7 +35,6 @@
             <v-card-title>
               <span class="text-h5">{{ formTitle }}</span>
             </v-card-title>
-
             <v-card-text v-show="mainData">
               <v-container>
                 <v-row>
@@ -97,7 +96,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.carbohydrates"
+                      v-model="editedItem.nutritions.carbohydrates"
                       label="Carbohydrates"
                     ></v-text-field>
                   </v-col>
@@ -107,7 +106,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.protein"
+                      v-model="editedItem.nutritions.protein"
                       label="Protein"
                     ></v-text-field>
                   </v-col>
@@ -117,7 +116,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.fat"
+                      v-model="editedItem.nutritions.fat"
                       label="Fat (g)"
                     ></v-text-field>
                   </v-col>
@@ -127,7 +126,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.calories"
+                      v-model="editedItem.nutritions.calories"
                       label="Calories (g)"
                     ></v-text-field>
                   </v-col>
@@ -137,7 +136,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.sugar"
+                      v-model="editedItem.nutritions.sugar"
                       label="Sugar (g)"
                     ></v-text-field>
                   </v-col>
@@ -212,8 +211,8 @@ import axios from 'axios'
     data: () => ({
       dialog: false,
       dialogDelete: false,
-      mainData: false,
-      subData: false,
+      mainData: true,
+      subData: true,
       headers: [
         {
           text: 'Name',
@@ -234,12 +233,14 @@ import axios from 'axios'
         genus: '',
         family: '',
         order: '',
+        nutritions:{}
       },
       defaultItem: {
         name: '',
         genus: '',
         family: '',
         order: '',
+        nutritions:{}
       },
     }),
 
@@ -267,9 +268,8 @@ import axios from 'axios'
         this.getAllProduct()
       },
       getAllProduct() {
-        axios.defaults.headers.common = ''
         axios
-          .get('https://www.fruityvice.com/api/fruit/all')
+          .get('/api/fruit/all')
           .then(response => {
             this.product = response.data
           })
@@ -277,12 +277,11 @@ import axios from 'axios'
       editItem (item, type) {
         console.log('type',type);
         if(type == 'subData'){
-          this.subData = true;
-          this.editedItem = Object.assign({}, item.nutritions)
+          this.mainData = false;
         }else if(type == 'mainData'){
-          this.mainData = true;
-          this.editedItem = Object.assign({}, item)
+          this.subData = false;
         }
+        this.editedItem = Object.assign({}, item)
         this.editedIndex = this.product.indexOf(item)
         this.dialog = true
       },
@@ -300,8 +299,8 @@ import axios from 'axios'
 
       close () {
         this.dialog = false
-        this.subData = false;
-        this.mainData = false;
+        this.subData = true;
+        this.mainData = true;
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
@@ -320,9 +319,17 @@ import axios from 'axios'
         if (this.editedIndex > -1) {
           Object.assign(this.product[this.editedIndex], this.editedItem)
         } else {
-          this.product.push(this.editedItem)
+          axios
+            .put('/api/fruit', this.editedItem)
+            .then(response => {
+              this.product.push(this.editedItem)
+              this.close()
+            })
+            .catch(error => {
+              console.log('error',error);
+              this.close()
+            })
         }
-        this.close()
       },
     },
   }
