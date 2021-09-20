@@ -1,5 +1,9 @@
 <template>
   <v-app>
+    <navigation/>
+    <v-app-bar app>
+      <!-- -->
+    </v-app-bar>
     <v-main>
       <router-view/>
     </v-main>
@@ -7,10 +11,12 @@
 </template>
 
 <script>
-
+import navigation from '@/components/Navigation.vue'
 export default {
   name: 'App',
-
+  components: {
+    navigation
+  },
   data: () => ({
     //
   }),

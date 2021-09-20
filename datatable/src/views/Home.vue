@@ -5,6 +5,9 @@
       :items="product"
       sort-by="name"
       class="elevation-1"
+      show-expand
+      :loading="loading"
+      loading-text="Loading... Please wait"
     >
       <template v-slot:top>
         <v-toolbar
@@ -179,6 +182,27 @@
       <template v-slot:item.nutritions="{ item }">
         <v-btn color="blue darken-1" @click="editItem(item, 'subData')">Edit</v-btn>
       </template>
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length" style="padding:0px;">
+          <v-simple-table
+            hide-default-footer
+            style="border-radius:0"
+          >
+            <template v-slot:default>
+              <thead>
+                <tr>
+                  <th v-for="(value,index) in item.nutritions" :key="value">{{index}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td v-for="value in item.nutritions" :key="value">{{value}}</td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+        </td>
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-icon
           small
@@ -206,6 +230,7 @@
     <v-snackbar
         v-model="snackbar"
         :timeout="2000"
+        :color="snackcolor"
       >
       {{ text }}
 
@@ -233,6 +258,8 @@ import axios from 'axios'
       mainData: true,
       subData: true,
       snackbar:false,
+      loading:true,
+      snackcolor:'info',
       text: '',
       headers: [
         {
@@ -245,6 +272,7 @@ import axios from 'axios'
         { text: 'Order', value: 'order' },
         { text: 'Genus', value: 'genus' },
         { text: 'Nutritions', value: 'nutritions' },
+        { text: 'More', value: 'data-table-expand' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       product: [],
@@ -293,6 +321,7 @@ import axios from 'axios'
           .get('/api/fruit/all')
           .then(response => {
             this.product = response.data
+            this.loading = false
           })
       },
       editItem (item, type) {
@@ -339,21 +368,23 @@ import axios from 'axios'
         if (this.editedIndex > -1) {
           Object.assign(this.product[this.editedIndex], this.editedItem)
           this.text = `Save ${this.editedItem['name']} data`
-          this.snackbar = true
+          this.snackcolor = 'info'
         } else {
           await axios
             .put('/api/fruit', this.editedItem)
             .then(response => {
               this.product.push(this.editedItem)
-              this.text = response.data.error
+              this.text = response.data.success
+              this.snackcolor = 'success'
             })
             .catch(error => {
               console.log('error',error);
               this.text = error.response.data.error
+              this.snackcolor = 'error'
             })
-          this.snackbar = true
-          this.close()
         }
+        this.snackbar = true
+        this.close()
       },
     },
   }
