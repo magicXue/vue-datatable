@@ -1,15 +1,14 @@
 <template>
-    <div>
     <v-navigation-drawer app
         v-model="drawer"
     >
         <v-list-item>
             <v-list-item-content>
             <v-list-item-title class="text-h6">
-                Application
+                Fruit
             </v-list-item-title>
             <v-list-item-subtitle>
-                subtext
+                this is example of vue and vuetify
             </v-list-item-subtitle>
             </v-list-item-content>
         </v-list-item>
@@ -33,7 +32,6 @@
             </v-list-item>
         </v-list>
     </v-navigation-drawer>
-    </div>
 </template>
 
 <script>
@@ -45,8 +43,8 @@
 
         items: [
           { title: 'Dashboard', icon: 'mdi-view-dashboard' },
-          { title: 'Photos', icon: 'mdi-image' },
-          { title: 'About', icon: 'mdi-help-box' },
+          { title: 'Fruit data table', icon: 'mdi-image' },
+          { title: 'Fruit gallery', icon: 'mdi-help-box' },
         ],
         right: null,
       }
