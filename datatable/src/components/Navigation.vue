@@ -14,7 +14,6 @@
     <v-navigation-drawer app
         v-model="drawer"
         clipped
-        hide-overlay=true
         :style="{ top: $vuetify.application.top + 'px', zIndex: 4 }"
     >
         <v-list-item>
@@ -37,6 +36,7 @@
             :key="item.title"
             link
             :to="item.link"
+            @click="drawer = false"
             >
             <v-list-item-icon>
                 <v-icon>{{ item.icon }}</v-icon>
@@ -71,5 +71,7 @@
         this.drawer = false
       },
     },
+    methods: {
+    }
   }
 </script>

@@ -1,46 +1,34 @@
 <template>
-    <v-container class="grey lighten-5">
+    <v-container class="lighten-5">
         <v-row no-gutters>
             <v-col
                 cols="12"
-                sm="4"
+                sm="2"
             >  
             </v-col>
             <v-col
                 cols="12"
-                sm="4"
+                sm="8"
+                style="display:grid;justify-content:center;"
             >
                 <v-carousel
                     cycle
-                    height="400"
+                    height="500"
                     hide-delimiter-background
                     show-arrows-on-hover
-                    style="width:600px;margin:10px"
+                    style="width:800px;margin:10px;"
                 >
                     <v-carousel-item
                     v-for="(slide, i) in slides"
                     :key="i"
+                    :src="slide"
                     >
-                    <v-sheet
-                        :color="colors[i]"
-                        height="100%"
-                    >
-                        <v-row
-                        class="fill-height"
-                        align="center"
-                        justify="center"
-                        >
-                        <div class="text-h2">
-                            {{ slide }} Slide
-                        </div>
-                        </v-row>
-                    </v-sheet>
                     </v-carousel-item>
                 </v-carousel>
             </v-col>
             <v-col
                 cols="12"
-                sm="4"
+                sm="2"
             ></v-col>
         </v-row>
   </v-container>
@@ -51,20 +39,25 @@
 export default {
     name: 'Gallery',
     data:() => ({
-        colors: [
-          'indigo',
-          'warning',
-          'pink darken-2',
-          'red lighten-1',
-          'deep-purple accent-4',
-        ],
         slides: [
-          'First',
-          'Second',
-          'Third',
-          'Fourth',
-          'Fifth',
+          
         ],
-    })
+    }),
+    created() {
+        this.getFiles();
+    },
+    methods: {
+        getFiles () {
+            const files = require.context('../assets/fruit', false, /.(png|jpg|jpeg|gif|bmp|webp)$/).keys()
+            console.log('files',files);
+            for (let item of files) {
+                let file =  require('../assets/fruit/' + item.substring(2))
+                // base64的不加载
+                if (file.indexOf('data:') !== 0) {
+                    this.slides.push(file)
+                }
+            }
+        },
+    }
 }
 </script>
